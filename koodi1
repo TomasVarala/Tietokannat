@@ -1,0 +1,194 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema kirppis_db
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema kirppis_db
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `kirppis_db` DEFAULT CHARACTER SET utf8 ;
+USE `kirppis_db` ;
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Asiakkaat`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Asiakkaat` (
+  `idAsiakkaat` INT NOT NULL,
+  `Etunimi` VARCHAR(45) NOT NULL,
+  `Sukunimi` VARCHAR(45) NOT NULL,
+  `Sahköposti` VARCHAR(45) NOT NULL,
+  `Osoite` VARCHAR(45) NOT NULL,
+  `Rekisteröintipäivä` DATETIME NOT NULL,
+  `Syntymäaika` DATETIME NOT NULL,
+  PRIMARY KEY (`idAsiakkaat`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Tuotteet`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Tuotteet` (
+)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Customers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Customers` (
+  `idCustomers` INT NOT NULL,
+  `Firstname` VARCHAR(45) NOT NULL,
+  `Lastname` VARCHAR(45) NOT NULL,
+  `Email` VARCHAR(45) NOT NULL,
+  `Phonenumber` VARCHAR(45) NOT NULL,
+  `Address` VARCHAR(45) NOT NULL,
+  `DateofBirth` DATETIME NOT NULL,
+  `Registrationdate` DATETIME NOT NULL,
+  PRIMARY KEY (`idCustomers`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Products` (
+  `idProducts` INT NOT NULL,
+  `Name` VARCHAR(45) NOT NULL,
+  `Description` VARCHAR(45) NOT NULL,
+  `Price` INT NOT NULL,
+  `Category` VARCHAR(45) NOT NULL,
+  `Salestatus` VARCHAR(45) NOT NULL,
+  `Imagefile` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idProducts`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Tables`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Tables` (
+  `idTables` INT NOT NULL,
+  `Size` VARCHAR(45) NOT NULL,
+  `Location` VARCHAR(45) NOT NULL,
+  `Availability` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idTables`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Reservations`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Reservations` (
+  `idReservations` INT NOT NULL,
+  `Startdate` DATETIME NOT NULL,
+  `Enddate` DATETIME NOT NULL,
+  `Paymentinfo` VARCHAR(45) NOT NULL,
+  `Confirmation` VARCHAR(45) NOT NULL,
+  `Customers_idCustomers` INT NOT NULL,
+  `Tables_idTables` INT NOT NULL,
+  PRIMARY KEY (`idReservations`),
+  INDEX `fk_Reservations_Customers_idx` (`Customers_idCustomers` ASC) VISIBLE,
+  INDEX `fk_Reservations_Tables1_idx` (`Tables_idTables` ASC) VISIBLE,
+  CONSTRAINT `fk_Reservations_Customers`
+    FOREIGN KEY (`Customers_idCustomers`)
+    REFERENCES `kirppis_db`.`Customers` (`idCustomers`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Reservations_Tables1`
+    FOREIGN KEY (`Tables_idTables`)
+    REFERENCES `kirppis_db`.`Tables` (`idTables`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Sales`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Sales` (
+  `idSales` INT NOT NULL,
+  `Products_idProducts` INT NOT NULL,
+  `Tables_idTables` INT NOT NULL,
+  `Customers_idCustomers` INT NOT NULL,
+  PRIMARY KEY (`idSales`),
+  INDEX `fk_Sales_Products1_idx` (`Products_idProducts` ASC) VISIBLE,
+  INDEX `fk_Sales_Tables1_idx` (`Tables_idTables` ASC) VISIBLE,
+  INDEX `fk_Sales_Customers1_idx` (`Customers_idCustomers` ASC) VISIBLE,
+  CONSTRAINT `fk_Sales_Products1`
+    FOREIGN KEY (`Products_idProducts`)
+    REFERENCES `kirppis_db`.`Products` (`idProducts`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Sales_Tables1`
+    FOREIGN KEY (`Tables_idTables`)
+    REFERENCES `kirppis_db`.`Tables` (`idTables`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Sales_Customers1`
+    FOREIGN KEY (`Customers_idCustomers`)
+    REFERENCES `kirppis_db`.`Customers` (`idCustomers`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Purchases`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Purchases` (
+  `idPurchases` INT NOT NULL,
+  `Reservations_idReservations` INT NOT NULL,
+  `Products_idProducts` INT NOT NULL,
+  `Customers_idCustomers` INT NOT NULL,
+  PRIMARY KEY (`idPurchases`),
+  INDEX `fk_Purchases_Reservations1_idx` (`Reservations_idReservations` ASC) VISIBLE,
+  INDEX `fk_Purchases_Products1_idx` (`Products_idProducts` ASC) VISIBLE,
+  INDEX `fk_Purchases_Customers1_idx` (`Customers_idCustomers` ASC) VISIBLE,
+  CONSTRAINT `fk_Purchases_Reservations1`
+    FOREIGN KEY (`Reservations_idReservations`)
+    REFERENCES `kirppis_db`.`Reservations` (`idReservations`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Purchases_Products1`
+    FOREIGN KEY (`Products_idProducts`)
+    REFERENCES `kirppis_db`.`Products` (`idProducts`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Purchases_Customers1`
+    FOREIGN KEY (`Customers_idCustomers`)
+    REFERENCES `kirppis_db`.`Customers` (`idCustomers`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kirppis_db`.`Sales_has_Purchases`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kirppis_db`.`Sales_has_Purchases` (
+  `Sales_idSales` INT NOT NULL,
+  `Purchases_idPurchases` INT NOT NULL,
+  PRIMARY KEY (`Sales_idSales`, `Purchases_idPurchases`),
+  INDEX `fk_Sales_has_Purchases_Purchases1_idx` (`Purchases_idPurchases` ASC) VISIBLE,
+  INDEX `fk_Sales_has_Purchases_Sales1_idx` (`Sales_idSales` ASC) VISIBLE,
+  CONSTRAINT `fk_Sales_has_Purchases_Sales1`
+    FOREIGN KEY (`Sales_idSales`)
+    REFERENCES `kirppis_db`.`Sales` (`idSales`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Sales_has_Purchases_Purchases1`
+    FOREIGN KEY (`Purchases_idPurchases`)
+    REFERENCES `kirppis_db`.`Purchases` (`idPurchases`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
